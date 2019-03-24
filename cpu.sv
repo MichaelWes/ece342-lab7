@@ -16,6 +16,8 @@ module cpu
 	output [7:0][15:0] o_tb_regs
 );
 
+	datapath_fetch f0(.clk(clk), .reset(reset), .BT('x), .PCsrc('0), .PCwrite('1));
+
 
 endmodule
 
