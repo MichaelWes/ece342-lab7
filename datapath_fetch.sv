@@ -22,6 +22,8 @@ module datapath_fetch
 	// to the next stage.
 	logic [IF_ID_WIDTH-1:0] IF_ID;
 	
+	
+	// Technically for Part I, this is always just PC + 2.
 	wire [15:0] PC_in = (PCsrc)? PC + 2 : BT;
 	
 	always_ff @(posedge clk) begin
