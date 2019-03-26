@@ -17,6 +17,9 @@ module datapath_fetch
    // Program Counter
    logic [15:0] PC;
 	
+	// Instruction Fetch / (Instruction Decode == RF Read) Pipeline Register.
+	// Parametrized width, since whaat we stuff in the pipeline register is just whatever we determine is needed as input
+	// to the next stage.
 	logic [IF_ID_WIDTH-1:0] IF_ID;
 	
 	wire [15:0] PC_in = (PCsrc)? PC + 2 : BT;
