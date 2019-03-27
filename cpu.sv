@@ -16,7 +16,16 @@ module cpu
 	output [7:0][15:0] o_tb_regs
 );
 
-	datapath_fetch f0(.clk(clk), .reset(reset), .BT('x), .PCsrc('0), .PCwrite('1));
+	datapath_fetch f0(
+		.clk(clk), 
+		.reset(reset), 
+		.BT('x), 
+		.PCsrc('0), 
+		.PCwrite('1), 
+		.i_instruction(i_pc_rddata), 
+		.PC(o_pc_addr)
+	);
+	assign o_pc_rd = '1;
 
 
 endmodule
