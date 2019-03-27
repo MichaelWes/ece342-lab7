@@ -27,6 +27,12 @@ module cpu
 	);
 	assign o_pc_rd = '1;
 
+	datapath_RF_Read r0(
+		.clk(clk),
+		.reset(reset),
+		.RF(o_tb_regs)
+	);
+	
 
 endmodule
 
