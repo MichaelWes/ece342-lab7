@@ -6,7 +6,8 @@ module datapath_fetch
 	PCsrc,
 	PCwrite,
 	i_instruction,
-	IF_ID
+	IF_ID,
+    PC
 );
 	input clk;
 	input reset;

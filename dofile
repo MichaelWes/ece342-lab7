@@ -1,0 +1,7 @@
+quit -sim
+vlog *.sv
+vsim -novopt tb
+add wave -group "tb" /tb/*
+
+run -all
+layout load Simulate
