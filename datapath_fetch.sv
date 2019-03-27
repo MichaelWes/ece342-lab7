@@ -4,15 +4,17 @@ module datapath_fetch
 	reset,
 	BT,
 	PCsrc,
-	PCwrite
+	PCwrite,
+	i_instruction
 );
 	input clk;
 	input reset;
 	input [15:0] BT;
 	input PCsrc;
 	input PCwrite;
-
-	parameter IF_ID_WIDTH = 16;
+	input [15:0] i_instruction;
+	
+	parameter IF_ID_WIDTH = 32;
 
    // Program Counter
    logic [15:0] PC;
@@ -20,7 +22,7 @@ module datapath_fetch
 	// Instruction Fetch / (Instruction Decode == RF Read) Pipeline Register.
 	// Parametrized width, since whaat we stuff in the pipeline register is just whatever we determine is needed as input
 	// to the next stage.
-	logic [IF_ID_WIDTH-1:0] IF_ID;
+	output logic [IF_ID_WIDTH-1:0] IF_ID;
 	
 	
 	// Technically for Part I, this is always just PC + 2.
@@ -35,6 +37,7 @@ module datapath_fetch
 				PC <= PC_in;				
 			end
 			IF_ID[15:0] <= PC + 2;
+			IF_ID[31:16] <= i_instruction;
 		end
 	end
 	
