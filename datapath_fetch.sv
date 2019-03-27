@@ -17,7 +17,7 @@ module datapath_fetch
 	parameter IF_ID_WIDTH = 32;
 
    // Program Counter
-   logic [15:0] PC;
+   output logic [15:0] PC;
 	
 	// Instruction Fetch / (Instruction Decode == RF Read) Pipeline Register.
 	// Parametrized width, since whaat we stuff in the pipeline register is just whatever we determine is needed as input
