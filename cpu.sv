@@ -1,3 +1,6 @@
+//`include "definesPkg.sv"
+import definesPkg::*;
+
 module cpu
 (
 	input clk,
@@ -16,22 +19,35 @@ module cpu
 	output [7:0][15:0] o_tb_regs
 );
 
-	datapath_fetch f0(
-		.clk(clk), 
-		.reset(reset), 
-		.BT('x), 
-		.PCsrc('0), 
-		.PCwrite('1), 
-		.i_instruction(i_pc_rddata), 
-		.PC(o_pc_addr)
-	);
+	// Instruction Fetch interface
+	wire [15:0] PC;
+	wire [15:0] BT = '0;
+	wire PCsrc = '0;
+	wire PCwrite = '1;
+	wire [IF_ID_WIDTH-1:0] IF_ID;
+	
+	datapath_fetch f0(.*);
 	assign o_pc_rd = '1;
-
-	datapath_RF_Read r0(
-		.clk(clk),
-		.reset(reset),
-		.RF(o_tb_regs)
-	);
+	assign o_pc_addr = PC;
+	
+	// Register File interface
+	wire [15:0] data1;
+	wire [15:0] data2;
+	wire [15:0] dataw;
+	wire [2:0] reg1; 
+   wire [2:0] reg2; 
+   wire [2:0] regw; 
+   wire RFWrite;
+	
+	RF rf0(.*);
+	
+	// Instruction Decode interface
+	wire [ID_EX_WIDTH-1:0] ID_EX;
+	wire [2:0] Rx;
+	wire [2:0] Ry;
+	assign reg1 = Rx;
+	assign reg2 = Ry;
+	datapath_RF_Read r0(.*);
 	
 
 endmodule

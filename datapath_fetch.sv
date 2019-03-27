@@ -1,3 +1,5 @@
+import definesPkg::*;
+
 module datapath_fetch
 (
 	clk,
@@ -5,7 +7,7 @@ module datapath_fetch
 	BT,
 	PCsrc,
 	PCwrite,
-	i_instruction,
+	i_pc_rddata,
 	IF_ID,
     PC
 );
@@ -14,9 +16,9 @@ module datapath_fetch
 	input [15:0] BT;
 	input PCsrc;
 	input PCwrite;
-	input [15:0] i_instruction;
+	input [15:0] i_pc_rddata;
 	
-	parameter IF_ID_WIDTH = 32;
+	
 
    // Program Counter
    output logic [15:0] PC;
@@ -28,7 +30,7 @@ module datapath_fetch
 	
 	
 	// Technically for Part I, this is always just PC + 2.
-	wire [15:0] PC_in = (PCsrc)? PC + 2 : BT;
+	wire [15:0] PC_in = (PCsrc)? PC + 16'd2 : BT;
 	
 	always_ff @(posedge clk) begin
 		if(reset) begin
@@ -38,8 +40,8 @@ module datapath_fetch
 			if(PCwrite) begin
 				PC <= PC_in;				
 			end
-			IF_ID[15:0] <= PC + 2;
-			IF_ID[31:16] <= i_instruction;
+			IF_ID[15:0] <= PC + 16'd2;
+			IF_ID[31:16] <= i_pc_rddata;
 		end
 	end
 	
