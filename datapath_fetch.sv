@@ -5,7 +5,8 @@ module datapath_fetch
 	BT,
 	PCsrc,
 	PCwrite,
-	i_instruction
+	i_instruction,
+	IF_ID
 );
 	input clk;
 	input reset;
