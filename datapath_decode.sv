@@ -9,8 +9,7 @@ module datapath_RF_Read
    data1,
    data2,
    IF_ID,
-   ID_EX,
-   ALUop
+   ID_EX
 );
    input clk;
    input reset;
@@ -29,8 +28,6 @@ module datapath_RF_Read
    
    logic [15:0] s_ext_imm8;
    logic [15:0] s_ext_imm11;
-   
-   output logic [2:0] ALUop;
    
    always_comb begin
       // TODO: Decoding logic for Rx based on instruction
@@ -54,24 +51,12 @@ module datapath_RF_Read
       s_ext_imm11 = {{8{IF_ID[15]}}, IF_ID[15:8]};
    end
    
-   always_comb begin
-      // ALUop signal generated based on the instruction
-      casex(instr) 
-         // mv, add, mvi, addi
-         5'bx000x: ALUop = 3'b000; 
-         // sub, cmp, subi, cmpi
-         5'bx001x: ALUop = 3'b001;
-         default: ALUop = '0;
-      endcase
-   end
-   
-   
    always_ff @(posedge clk) begin
       if(reset) begin
          ID_EX <= '0;   
       end else begin
          // TODO: Other information to pass along?
-         ID_EX <= {ALUop, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr};  
+         ID_EX <= {s_ext_imm8, s_ext_imm11, data1, data2, PC, instr};  
       end
    end
 endmodule

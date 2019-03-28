@@ -26,13 +26,14 @@ set_instance_assignment -name VIRTUAL_PIN ON -to i_*
 set_instance_assignment -name VIRTUAL_PIN ON -to o_*
 
 set_global_assignment -name SEARCH_PATH "w:\\ece342\\lab7"
+set_global_assignment -name SYSTEMVERILOG_FILE datapath_decode.sv
+set_global_assignment -name SYSTEMVERILOG_FILE datapath_ID.sv
 set_global_assignment -name SYSTEMVERILOG_FILE ALU.sv
 set_global_assignment -name SYSTEMVERILOG_FILE RF.sv
 set_global_assignment -name SYSTEMVERILOG_FILE cpu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE harness.sv
 set_global_assignment -name SDC_FILE harness.sdc
 set_global_assignment -name SYSTEMVERILOG_FILE datapath_fetch.sv
-set_global_assignment -name SYSTEMVERILOG_FILE datapath_RF_Read.sv
 set_global_assignment -name SYSTEMVERILOG_FILE definesPkg.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath_execute.sv
 set_global_assignment -name SYSTEMVERILOG_FILE datapath_writeback.sv
