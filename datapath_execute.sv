@@ -95,6 +95,30 @@ module datapath_execute
          default: ALUop = '0;
       endcase
    end
+	
+	always_comb begin
+		case(instr)
+			// ld
+			5'b00100: begin
+				o_ldst_addr = data2;
+				o_ldst_rd = 1'b1;
+				o_ldst_wr = 1'b0;
+				o_ldst_wrdata = 'x;
+			end
+			5'b00101: begin
+				o_ldst_addr = data2;
+				o_ldst_rd = 1'b0;
+				o_ldst_wr = 1'b1;
+				o_ldst_wrdata = data1;
+			end
+			default: begin
+				o_ldst_addr = 'x;
+				o_ldst_wrdata = 'x;
+				o_ldst_wr = '0;
+				o_ldst_rd = '0;
+			end
+		endcase
+	end
    
 	always_ff @(posedge clk) begin
 		if(reset) begin
@@ -102,7 +126,7 @@ module datapath_execute
 		end else begin
 			// TODO: writing BT to EX/WB 
 			// TODO: other values as needed
-			EX_WB <= {PC, ALUout, instr};
+			EX_WB <= {ALUout, instr};
 		end
 	end
 	
