@@ -28,7 +28,7 @@ module datapath_fetch
    
    
    // Technically for Part I, this is always just PC + 2.
-   wire [15:0] PC_in = (PCsrc)? PC + 16'd2 : BT;
+   //wire [15:0] PC_in = (PCsrc)? PC + 16'd2 : BT;
    
    always_ff @(posedge clk) begin
       if(reset) begin
@@ -36,7 +36,7 @@ module datapath_fetch
          IF_ID <= '0;
       end else begin
          if(PCwrite) begin
-            PC <= PC_in;            
+            PC <= PC + 16'd2;            
          end
          IF_ID[15:0] <= PC + 16'd2;
          IF_ID[31:16] <= i_pc_rddata;

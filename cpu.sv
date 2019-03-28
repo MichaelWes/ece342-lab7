@@ -17,7 +17,7 @@ module cpu
    
    output [7:0][15:0] o_tb_regs
 );
-
+	
    // Instruction Fetch interface
    wire [15:0] PC;
    wire [15:0] BT = '0;
@@ -37,9 +37,11 @@ module cpu
    wire [2:0] reg1; 
    wire [2:0] reg2; 
    wire [2:0] regw; 
+	wire [7:0][15:0] regs;
    wire RFWrite;
    RF rf0(.*);
-   
+   assign o_tb_regs = regs;
+	
    // Instruction Decode interface
    wire [ID_EX_WIDTH-1:0] ID_EX;
    wire [2:0] Rx;

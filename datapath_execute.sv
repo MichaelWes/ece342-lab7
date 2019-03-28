@@ -91,6 +91,8 @@ module datapath_execute
          5'bx000x: ALUop = 3'b000; 
          // sub, cmp, subi, cmpi
          5'bx001x: ALUop = 3'b001;
+			// mvhi
+			5'b10110: ALUop = 3'b100;
 			// TODO: operations for other instructions
          default: ALUop = '0;
       endcase

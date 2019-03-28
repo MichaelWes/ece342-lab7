@@ -8,12 +8,13 @@ module RF
    dataw,
    data2,
    data1,
-   RFWrite
+   RFWrite,
+	regs
 );
    input clk;
    input reset;
    
-   logic [7:0][15:0] regs;
+   output logic [7:0][15:0] regs;
 
    input [2:0] reg1; //src1
    input [2:0] reg2; //src2

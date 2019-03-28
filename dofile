@@ -2,6 +2,7 @@ quit -sim
 vlog *.sv
 vsim -novopt tb
 add wave -group "tb" /tb/*
-
+add wave -group "cpu" /tb/dut/*
+add wave -group "RF" /tb/dut/rf0/regs
 run -all
 layout load Simulate

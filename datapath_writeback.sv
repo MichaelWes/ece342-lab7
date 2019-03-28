@@ -28,27 +28,22 @@ module datapath_writeback
 	always_comb begin
 		RFWrite = 1'b0;
 		case(opcode)
-			// mv, add
-			5'b0000x: begin
+			// mv, add, sub, mvi, addi, sub, mvhi
+			5'b0000x, 5'b00010, 5'b1000x, 5'b10010, 5'b10110: begin
 				RFWrite = 1'b1;
 				dataw = ALUout;
 				regw = instr[7:5];
 			end
-			// sub
-			5'b00010: begin
-				RFWrite = 1'b1;
-				dataw = ALUout;
-				regw = instr[7:5];
-			end
-			// TODO: cmp, st
 			// ld
 			5'b00100: begin
 				RFWrite = 1'b1;
 				dataw = i_ldst_rddata; // mem[[Ry]]
 				regw = instr[7:5]; // [Rx] <- mem[[Ry]]
 			end
-			// TODO: addi, subi, cmpi, mvhi
-			// TODO: Branching instructions
+			// TODO: st
+			// TODO: Branch instructions
+			
+			// cmp, cmpi: do not write back to RF
 			default: begin
 				RFWrite = 1'b0;
 				dataw = 'x;
