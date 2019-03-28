@@ -23,11 +23,11 @@ module datapath_writeback
 	output logic [2:0] regw;	
 	
 	assign {data1, data2, ALUout, instr} = EX_WB;
-	wire [4:0] opcode = ALUout;
+	wire [4:0] opcode = instr[4:0];
 	
 	always_comb begin
 		RFWrite = 1'b0;
-		case(opcode)
+		casex(opcode)
 			// mv, add, sub, mvi, addi, sub, mvhi
 			5'b0000x, 5'b00010, 5'b1000x, 5'b10010, 5'b10110: begin
 				RFWrite = 1'b1;
@@ -35,11 +35,13 @@ module datapath_writeback
 				regw = instr[7:5];
 			end
 			// ld
+			/*
 			5'b00100: begin
 				RFWrite = 1'b1;
 				dataw = i_ldst_rddata; // mem[[Ry]]
 				regw = instr[7:5]; // [Rx] <- mem[[Ry]]
 			end
+			*/
 			// TODO: st
 			// TODO: Branch instructions
 			

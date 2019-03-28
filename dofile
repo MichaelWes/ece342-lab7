@@ -1,8 +1,22 @@
 quit -sim
 vlog *.sv
 vsim -novopt tb
-add wave -group "tb" /tb/*
-add wave -group "cpu" /tb/dut/*
-add wave -group "RF" /tb/dut/rf0/regs
+add wave -group "tb" -radix hex /tb/*
+add wave -group "cpu" -radix hex /tb/dut/*
+add wave -group "RF" -radix hex /tb/dut/rf0/regs
+add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm8
+add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm11
+delete wave /tb/clk
+delete wave /tb/reset
+delete wave /tb/dut/o_tb_regs
+delete wave /tb/o_tb_regs
+delete wave /tb/tstate
 run -all
 layout load Simulate
+layout zoomwindow wave
+noview objects
+noview processes
+noview library
+noview memory
+noview structure
+noview .main_pane.source

@@ -17,8 +17,8 @@ module datapath_RF_Read
    input          [IF_ID_WIDTH-1:0] IF_ID;
    output logic   [ID_EX_WIDTH-1:0] ID_EX;   
    
-   wire [15:0] PC = IF_ID[15:0];
-   wire [15:0] instr = IF_ID[31:16];
+   wire [15:0] PC = IF_ID[31:16];
+   wire [15:0] instr = IF_ID[15:0];
    
    output logic [2:0] Rx;
    output logic [2:0] Ry;
@@ -28,27 +28,27 @@ module datapath_RF_Read
    
    logic [15:0] s_ext_imm8;
    logic [15:0] s_ext_imm11;
-   
+	   
    always_comb begin
       // TODO: Decoding logic for Rx based on instruction
       // This holds for everything except imm11 instructions
-      Rx = IF_ID[7:5];
+      Rx = instr[7:5];
    end
    
    always_comb begin
       // TODO: Decoding logic for Ry based on instruction
       // This holds for mv, add, sub, cmp, ld, st
-      Ry = IF_ID[10:8];
+      Ry = instr[10:8];
    end
    
    always_comb begin
       // For mvi, addi, subi, cmpi
-      s_ext_imm8 = {{8{IF_ID[15]}}, IF_ID[15:8]};
+      s_ext_imm8 = {{8{instr[15]}}, instr[15:8]};
    end
    
    always_comb begin
       // For j, jz, jn, call
-      s_ext_imm11 = {{8{IF_ID[15]}}, IF_ID[15:8]};
+      s_ext_imm11 = {{8{instr[15]}}, instr[15:5]};
    end
    
    always_ff @(posedge clk) begin

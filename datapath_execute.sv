@@ -43,9 +43,10 @@ module datapath_execute
    output logic o_ldst_wr;
    output logic [15:0] o_ldst_wrdata;
 	
+	wire [4:0] opcode = instr[4:0];
+	
 	always_comb begin
-		// opcode == ID_EX[4:0]
-		casex(instr[4:0])
+		casex(opcode)
 			// mv
 			5'b00000: begin
 				ALUop1 = '0;
@@ -86,7 +87,7 @@ module datapath_execute
 
    always_comb begin
       // ALUop signal generated based on the instruction
-      casex(instr) 
+      casex(opcode) 
          // mv, add, mvi, addi
          5'bx000x: ALUop = 3'b000; 
          // sub, cmp, subi, cmpi
@@ -99,7 +100,7 @@ module datapath_execute
    end
 	
 	always_comb begin
-		case(instr)
+		case(opcode)
 			// ld
 			5'b00100: begin
 				o_ldst_addr = data2;
@@ -107,6 +108,7 @@ module datapath_execute
 				o_ldst_wr = 1'b0;
 				o_ldst_wrdata = 'x;
 			end
+			// st
 			5'b00101: begin
 				o_ldst_addr = data2;
 				o_ldst_rd = 1'b0;
@@ -128,7 +130,7 @@ module datapath_execute
 		end else begin
 			// TODO: writing BT to EX/WB 
 			// TODO: other values as needed
-			EX_WB <= {ALUout, instr};
+			EX_WB <= {data1, data2, ALUout, instr};
 		end
 	end
 	

@@ -38,8 +38,8 @@ module datapath_fetch
          if(PCwrite) begin
             PC <= PC + 16'd2;            
          end
-         IF_ID[15:0] <= PC + 16'd2;
-         IF_ID[31:16] <= i_pc_rddata;
+         IF_ID[31:16] <= PC + 16'd2;
+         IF_ID[15:0] <= i_pc_rddata;
       end
    end
    
