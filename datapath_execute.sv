@@ -149,7 +149,7 @@ module datapath_execute
 		end else begin
 			// TODO: writing BT to EX/WB 
 			// TODO: other values as needed
-			if(ex_valid)
+			if(id_valid)
 				EX_WB <= {ex_valid, data1, data2, ALUout, instr};
 		end
 	end
