@@ -28,10 +28,11 @@ module datapath_execute
    wire [15:0] data2; //[Ry]
    wire [15:0] s_ext_imm8;
    wire [15:0] s_ext_imm11;
+   wire id_valid;
 
-	assign {s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
-		
-	// ALU
+   assign {id_valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
+   	
+   // ALU
    output logic [2:0] ALUop;	
    output logic [15:0] ALUop1;
    output logic [15:0] ALUop2;
@@ -45,6 +46,16 @@ module datapath_execute
 	
 	wire [4:0] opcode = instr[4:0];
 	
+   logic ex_valid;
+
+   always_ff @(posedge clk) begin
+   	if(reset) 
+   		ex_valid <= '0;
+   	else begin
+   		ex_valid <= id_valid;
+   	end
+   end
+
 	always_comb begin
 		casex(opcode)
 			// mv
@@ -99,29 +110,37 @@ module datapath_execute
       endcase
    end
 	
+	// Generate signals for loads and stores
 	always_comb begin
-		case(opcode)
-			// ld
-			5'b00100: begin
-				o_ldst_addr = data2;
-				o_ldst_rd = 1'b1;
-				o_ldst_wr = 1'b0;
-				o_ldst_wrdata = 'x;
-			end
-			// st
-			5'b00101: begin
-				o_ldst_addr = data2;
-				o_ldst_rd = 1'b0;
-				o_ldst_wr = 1'b1;
-				o_ldst_wrdata = data1;
-			end
-			default: begin
-				o_ldst_addr = 'x;
-				o_ldst_wrdata = 'x;
-				o_ldst_wr = '0;
-				o_ldst_rd = '0;
-			end
-		endcase
+		if(ex_valid) begin
+			case(opcode)
+				// ld
+				5'b00100: begin
+					o_ldst_addr = data2;
+					o_ldst_rd = 1'b1;
+					o_ldst_wr = 1'b0;
+					o_ldst_wrdata = 'x;
+				end
+				// st
+				5'b00101: begin
+					o_ldst_addr = data2;
+					o_ldst_rd = 1'b0;
+					o_ldst_wr = 1'b1;
+					o_ldst_wrdata = data1;
+				end
+				default: begin
+					o_ldst_addr = 'x;
+					o_ldst_wrdata = 'x;
+					o_ldst_wr = '0;
+					o_ldst_rd = '0;
+				end
+			endcase
+		end else begin
+			o_ldst_addr = 'x;
+			o_ldst_wrdata = 'x;
+			o_ldst_wr = '0;
+			o_ldst_rd = '0;
+		end
 	end
    
 	always_ff @(posedge clk) begin
@@ -130,7 +149,8 @@ module datapath_execute
 		end else begin
 			// TODO: writing BT to EX/WB 
 			// TODO: other values as needed
-			EX_WB <= {data1, data2, ALUout, instr};
+			if(ex_valid)
+				EX_WB <= {ex_valid, data1, data2, ALUout, instr};
 		end
 	end
 	

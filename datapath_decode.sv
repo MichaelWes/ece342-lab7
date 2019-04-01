@@ -28,6 +28,17 @@ module datapath_RF_Read
    
    logic [15:0] s_ext_imm8;
    logic [15:0] s_ext_imm11;
+
+   wire f_valid = IF_ID[32];
+   logic id_valid;
+
+   always_ff @(posedge clk) begin
+      if(reset)
+         id_valid <= '0;
+      else begin
+         id_valid <= f_valid;
+      end
+   end
 	   
    always_comb begin
       // TODO: Decoding logic for Rx based on instruction
@@ -56,7 +67,7 @@ module datapath_RF_Read
          ID_EX <= '0;   
       end else begin
          // TODO: Other information to pass along?
-         ID_EX <= {s_ext_imm8, s_ext_imm11, data1, data2, PC, instr};  
+         ID_EX <= {id_valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr};  
       end
    end
 endmodule
