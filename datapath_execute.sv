@@ -28,9 +28,9 @@ module datapath_execute
    wire [15:0] data2; //[Ry]
    wire [15:0] s_ext_imm8;
    wire [15:0] s_ext_imm11;
-   wire id_valid;
+   wire valid;
 
-   assign {id_valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
+   assign {valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
    	
    // ALU
    output logic [2:0] ALUop;	
@@ -46,16 +46,6 @@ module datapath_execute
 	
 	wire [4:0] opcode = instr[4:0];
 	
-   logic ex_valid;
-
-   always_ff @(posedge clk) begin
-   	if(reset) 
-   		ex_valid <= '0;
-   	else begin
-   		ex_valid <= id_valid;
-   	end
-   end
-
 	always_comb begin
 		casex(opcode)
 			// mv
@@ -112,7 +102,7 @@ module datapath_execute
 	
 	// Generate signals for loads and stores
 	always_comb begin
-		if(ex_valid) begin
+		if(valid) begin
 			case(opcode)
 				// ld
 				5'b00100: begin
@@ -149,8 +139,8 @@ module datapath_execute
 		end else begin
 			// TODO: writing BT to EX/WB 
 			// TODO: other values as needed
-			if(id_valid)
-				EX_WB <= {ex_valid, data1, data2, ALUout, instr};
+			if(valid)
+				EX_WB <= {valid, data1, data2, ALUout, instr};
 		end
 	end
 	

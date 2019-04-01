@@ -6,6 +6,10 @@ add wave -group "cpu" -radix hex /tb/dut/*
 add wave -group "RF" -radix hex /tb/dut/rf0/regs
 add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm8
 add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm11
+add wave -group "valid bits" /tb/dut/f0/f_valid
+add wave -group "valid bits" /tb/dut/r0/valid
+add wave -group "valid bits" /tb/dut/ex0/valid
+add wave -group "valid bits" /tb/dut/wb0/valid
 delete wave /tb/clk
 delete wave /tb/reset
 delete wave /tb/dut/o_tb_regs
