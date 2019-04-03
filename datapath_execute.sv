@@ -13,7 +13,9 @@ module datapath_execute
    o_ldst_addr,
    o_ldst_rd,
    o_ldst_wr,
-   o_ldst_wrdata
+   o_ldst_wrdata,
+	dataw,
+	regw
 );
    input clk;
    input reset;   
@@ -29,8 +31,11 @@ module datapath_execute
    wire [15:0] s_ext_imm8;
    wire [15:0] s_ext_imm11;
    wire valid;
-
-   assign {valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
+	wire [2:0] Rx;
+	wire [2:0] Ry;
+	wire Rx_valid, Ry_valid;
+	
+   assign {Rx_valid, Ry_valid, Rx, Ry, valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
    	
    // ALU
    output logic [2:0] ALUop;	
@@ -46,22 +51,42 @@ module datapath_execute
 	
 	wire [4:0] opcode = instr[4:0];
 	
+	// forwarded signals from WB stage
+	input [15:0] dataw;
+	input [2:0] regw;
+	
+	// forwarded operands, or operands read from ID_EX, whichever is more recent
+	logic [15:0] operand1;
+	logic [15:0] operand2;
+	
+		// Operand forwarding logic
+	always_comb begin
+		operand1 = data1;
+		operand2 = data2;
+		if((regw == Rx) & Rx_valid) begin
+			operand1 = dataw;
+		end
+		if((regw == Ry) & Ry_valid) begin
+			operand2 = dataw;
+		end
+	end
+	
 	always_comb begin
 		casex(opcode)
 			// mv
 			5'b00000: begin
 				ALUop1 = '0;
-				ALUop2 = data2;
+				ALUop2 = operand2;
 			end
 			// add
 			5'b00001: begin
-				ALUop1 = data1;
-				ALUop2 = data2;
+				ALUop1 = operand1;
+				ALUop2 = operand2;
 			end
 			// sub, cmp
 			5'b0001x: begin
-				ALUop1 = data1;
-				ALUop2 = data2;
+				ALUop1 = operand1;
+				ALUop2 = operand2;
 			end
 			// mvi
 			5'b10000: begin
@@ -70,13 +95,17 @@ module datapath_execute
 			end
 			// addi
 			5'b10001: begin
-				ALUop1 = data1;
+				ALUop1 = operand1;
 				ALUop2 = s_ext_imm8;
 			end
 			// subi, cmpi
 			5'b1001x: begin
-				ALUop1 = data1;
+				ALUop1 = operand1;
 				ALUop2 = s_ext_imm8;
+			end
+			5'b10110: begin
+				ALUop1 = operand1;
+				ALUop2 = instr[15:8]; // imm8
 			end
 			// TODO: ALU operands MUX for the rest of the instructions
 			default: begin
@@ -106,17 +135,17 @@ module datapath_execute
 			case(opcode)
 				// ld
 				5'b00100: begin
-					o_ldst_addr = data2;
+					o_ldst_addr = operand2;
 					o_ldst_rd = 1'b1;
 					o_ldst_wr = 1'b0;
 					o_ldst_wrdata = 'x;
 				end
 				// st
 				5'b00101: begin
-					o_ldst_addr = data2;
+					o_ldst_addr = operand2;
 					o_ldst_rd = 1'b0;
 					o_ldst_wr = 1'b1;
-					o_ldst_wrdata = data1;
+					o_ldst_wrdata = operand1;
 				end
 				default: begin
 					o_ldst_addr = 'x;
