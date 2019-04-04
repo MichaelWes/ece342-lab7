@@ -6,5 +6,5 @@ package definesPkg;
    parameter ID_EX_WIDTH = 96 + 1 + 8;
    
    //TODO: Determine the right width
-   parameter EX_WB_WIDTH = 96 + 1;
+   parameter EX_WB_WIDTH = (16 * 5) + 1;
 endpackage

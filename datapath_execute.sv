@@ -10,12 +10,17 @@ module datapath_execute
 	ALUop1,
 	ALUop2,
 	ALUout,
+	Z,
+	N,
+	update_flags,
    o_ldst_addr,
    o_ldst_rd,
    o_ldst_wr,
    o_ldst_wrdata,
 	dataw,
-	regw
+	regw,
+	BT,
+	taken
 );
    input clk;
    input reset;   
@@ -42,6 +47,8 @@ module datapath_execute
    output logic [15:0] ALUop1;
    output logic [15:0] ALUop2;
 	input [15:0] ALUout;
+	input Z, N;
+	output logic update_flags;
 	
 	// ld/st signals 
 	output logic [15:0] o_ldst_addr;
@@ -59,7 +66,11 @@ module datapath_execute
 	logic [15:0] operand1;
 	logic [15:0] operand2;
 	
-		// Operand forwarding logic
+	// branch instruction logic
+	output logic [15:0] BT;
+	output logic taken;
+	
+	// Operand forwarding logic
 	always_comb begin
 		operand1 = data1;
 		operand2 = data2;
@@ -72,6 +83,34 @@ module datapath_execute
 	end
 	
 	always_comb begin
+		taken = '0;
+		if(valid) begin
+			casex(opcode)
+				// jr, callr, j, call instructions imply the branch should be taken
+				5'bx1x00: begin 
+					taken = '1;
+				end
+				// jz, jzr instructions imply branch is taken when the condition holds
+				5'bx1001: begin
+					taken = Z;
+				end
+				// jn, jnr instructions imply branch is taken when the condition holds
+				5'bx1010: begin
+					taken = N;
+				end
+				default: begin
+					taken = '0;
+				end
+			endcase
+		end
+	end
+	
+	always_comb begin
+		BT = ALUout;
+	end
+	
+	always_comb begin
+		update_flags = '0;
 		casex(opcode)
 			// mv
 			5'b00000: begin
@@ -82,11 +121,13 @@ module datapath_execute
 			5'b00001: begin
 				ALUop1 = operand1;
 				ALUop2 = operand2;
+				update_flags = '1;
 			end
 			// sub, cmp
 			5'b0001x: begin
 				ALUop1 = operand1;
 				ALUop2 = operand2;
+				update_flags = '1;
 			end
 			// mvi
 			5'b10000: begin
@@ -97,15 +138,28 @@ module datapath_execute
 			5'b10001: begin
 				ALUop1 = operand1;
 				ALUop2 = s_ext_imm8;
+				update_flags = '1;
 			end
 			// subi, cmpi
 			5'b1001x: begin
 				ALUop1 = operand1;
 				ALUop2 = s_ext_imm8;
+				update_flags = '1;
 			end
+			// mvhi
 			5'b10110: begin
 				ALUop1 = operand1;
 				ALUop2 = instr[15:8]; // imm8
+			end
+			// call, j, jz, jn
+			5'b11100, 5'b11000, 5'b11001, 5'b11000: begin
+				ALUop1 = PC;
+				ALUop2 = s_ext_imm11;
+			end
+			// callr, jr, jzr, jnr
+			5'b01100, 5'b01000, 5'b01001, 5'b01010: begin
+				ALUop1 = operand1;
+				ALUop2 = 'x;
 			end
 			// TODO: ALU operands MUX for the rest of the instructions
 			default: begin
@@ -124,7 +178,10 @@ module datapath_execute
          5'bx001x: ALUop = 3'b001;
 			// mvhi
 			5'b10110: ALUop = 3'b100;
-			// TODO: operations for other instructions
+			// j, jz, jn, call
+			5'b1100x, 5'b11010, 5'b11100: ALUop = 3'b010;
+			// for jr, jzr, jnr, callr
+			5'b0100x, 5'b01010, 5'b01100: ALUop = 3'b011;
          default: ALUop = '0;
       endcase
    end
@@ -162,14 +219,13 @@ module datapath_execute
 		end
 	end
    
-	always_ff @(posedge clk) begin
+	always_ff @(posedge clk or posedge reset) begin
 		if(reset) begin
 			EX_WB <= '0;
 		end else begin
-			// TODO: writing BT to EX/WB 
-			// TODO: other values as needed
-			if(valid)
-				EX_WB <= {valid, data1, data2, ALUout, instr};
+			if(valid) begin
+				EX_WB <= {PC, valid, data1, data2, ALUout, instr};
+			end
 		end
 	end
 	

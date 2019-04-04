@@ -23,9 +23,11 @@ module datapath_writeback
 
 	output logic RFWrite;
 	output logic [15:0] dataw;
-	output logic [2:0] regw;	
+	output logic [2:0] regw;
 	
-	assign {valid, data1, data2, ALUout, instr} = EX_WB;
+	logic[15:0] PC;
+	
+	assign {taken, PC, valid, data1, data2, ALUout, instr} = EX_WB;
 	wire [4:0] opcode = instr[4:0];
 	
 	logic wb_valid;
@@ -40,6 +42,13 @@ module datapath_writeback
 					dataw = ALUout;
 					regw = instr[7:5];
 				end
+				
+				// call
+				5'b11100, 5'b01100: begin
+					RFWrite = 1'b1;
+					dataw = PC;
+					regw = 3'd7;
+				end
 				// ld
 				/*
 				5'b00100: begin
@@ -50,7 +59,7 @@ module datapath_writeback
 				*/
 				// TODO: st
 				// TODO: Branch instructions
-				
+
 				// cmp, cmpi: do not write back to RF
 				default: begin
 					RFWrite = 1'b0;

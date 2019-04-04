@@ -5,19 +5,17 @@ module datapath_fetch
    clk,
    reset,
    BT,
-   PCsrc,
-   PCwrite,
    i_pc_rddata,
    IF_ID,
-   PC
+   PC,
+	taken
 );
    input clk;
    input reset;
    input [15:0] BT;
-   input PCsrc;
-   input PCwrite;
+	input taken;
    input [15:0] i_pc_rddata;
-
+	
    // Program Counter
    output logic [15:0] PC;
    
@@ -28,28 +26,25 @@ module datapath_fetch
    
    logic f_valid;
 
-   always_ff @(posedge clk) begin
+   always_ff @(posedge clk or posedge reset) begin
       if(reset) 
          f_valid <= '0;
       else begin 
          f_valid <= '1;
       end
    end
-
-   // Technically for Part I, this is always just PC + 2.
-   //wire [15:0] PC_in = (PCsrc)? PC + 16'd2 : BT;
    
-   always_ff @(posedge clk) begin
+	wire [15:0] PC_input = (taken == 1'b1) ? (BT) : (PC + 16'd2); 
+	
+   always_ff @(posedge clk or posedge reset) begin
       if(reset) begin
          PC <= '0;
          IF_ID <= '0;
       end else begin
-         if(PCwrite) begin
-            PC <= PC + 16'd2;            
-         end
+         PC <= PC_input;
          IF_ID[32] <= f_valid;
-         IF_ID[31:16] <= PC + 16'd2;
-         IF_ID[15:0] <= i_pc_rddata;
+         IF_ID[31:16] <= PC_input;
+         IF_ID[15:0] <= '0;
       end
    end
    

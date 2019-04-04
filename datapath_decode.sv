@@ -4,6 +4,7 @@ module datapath_RF_Read
 (
    clk,
    reset,
+	i_pc_rddata,
    Rx,
    Ry,
    data1,
@@ -16,15 +17,18 @@ module datapath_RF_Read
 	input clk;
 	input reset;
 	
+	input [15:0] i_pc_rddata;
+	
 	input          [IF_ID_WIDTH-1:0] IF_ID;
 	output logic   [ID_EX_WIDTH-1:0] ID_EX;   
 	
 	wire [15:0] PC = IF_ID[31:16];
-	wire [15:0] instr = IF_ID[15:0];
+	wire [15:0] instr = i_pc_rddata[15:0];
 	
 	output logic [2:0] Rx;
 	output logic [2:0] Ry;
 	
+	// signals indicating whether this instruction encodes register operand(s)
 	logic Rx_valid, Ry_valid;
 	
 	input [15:0] data1; //[Rx]
@@ -56,6 +60,8 @@ module datapath_RF_Read
 			default: Ry_valid = '0;
 		endcase
    end
+	
+	
    
 	// Operand forwarding logic
 	always_comb begin
@@ -76,10 +82,10 @@ module datapath_RF_Read
    
    always_comb begin
       // For j, jz, jn, call
-      s_ext_imm11 = {{8{instr[15]}}, instr[15:5]};
+      s_ext_imm11 = {{5{instr[15]}}, instr[15:5]};
    end
    
-   always_ff @(posedge clk) begin
+   always_ff @(posedge clk or posedge reset) begin
       if(reset) begin
          ID_EX <= '0;   
       end else begin

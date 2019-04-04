@@ -20,10 +20,9 @@ module cpu
 	
    // Instruction Fetch interface
    wire [15:0] PC;
-   wire [15:0] BT = '0;
-   wire PCsrc = '0;
-   wire PCwrite = '1;
+   wire [15:0] BT;
    wire [IF_ID_WIDTH-1:0] IF_ID;
+	wire taken;
    datapath_fetch f0(.*);
    
    // See: Patterson & Hennessy HW/SW:I 5ed, p 300.
@@ -39,6 +38,7 @@ module cpu
    wire [2:0] regw; 
 	wire [7:0][15:0] regs;
    wire RFWrite;
+	wire lock = taken;
    RF rf0(.*);
    assign o_tb_regs = regs;
 	
@@ -61,6 +61,7 @@ module cpu
    wire [15:0] ALUop2;
    wire logic o_N;
    wire logic o_Z;
+	wire N, Z, update_flags;
    wire [15:0] ALUout;  
    ALU a0(.*);
       
