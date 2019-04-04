@@ -167,7 +167,7 @@ module datapath_execute
 				ALUop2 = instr[15:8]; // imm8
 			end
 			// call, j, jz, jn
-			5'b11100, 5'b11000, 5'b11001, 5'b11000: begin
+			5'b11100, 5'b11000, 5'b11001, 5'b11010: begin
 				ALUop1 = PC;
 				ALUop2 = s_ext_imm11;
 			end

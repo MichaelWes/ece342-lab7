@@ -43,7 +43,7 @@ module datapath_writeback
 	
 	always_comb begin
 		RFWrite = 1'b0;
-		if(ex_valid) begin
+		if(wb_valid) begin
 			casex(opcode)
 				// mv, add, sub, mvi, addi, sub, mvhi
 				5'b0000x, 5'b00010, 5'b1000x, 5'b10010, 5'b10110: begin
@@ -67,7 +67,6 @@ module datapath_writeback
 				end
 				*/
 				// TODO: st
-				// TODO: Branch instructions
 
 				// cmp, cmpi: do not write back to RF
 				default: begin

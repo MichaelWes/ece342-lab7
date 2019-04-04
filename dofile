@@ -21,6 +21,8 @@ add wave -group "internal signals" -label "Taken" /tb/dut/ex0/taken
 add wave -group "internal signals" /tb/dut/ex0/opcode
 add wave -group "internal signals" -label "Branch Target" -radix hex /tb/dut/ex0/BT
 
+add wave -group "ALU" /tb/dut/a0/*
+
 add wave -group "Instruction" -label "clk" /tb/clk
 add wave -group "Instruction" -label "reset" /tb/reset
 add wave -group "Instruction" -label "PC" -radix hex /tb/dut/PC
