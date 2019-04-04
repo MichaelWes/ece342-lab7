@@ -30,7 +30,7 @@ module RF
    
    always_ff @(posedge clk) begin
       if(reset) begin
-         regs <= '0;
+         regs <= {16'hBADD, 16'hCAFE, 16'hBADD, 16'hCAFE, 16'hBADD, 16'hCAFE, 16'hBADD, 16'hCAFE};
       end else begin
          if(RFWrite) begin
             regs[regw] <= dataw;
