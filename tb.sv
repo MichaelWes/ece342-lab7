@@ -157,10 +157,10 @@ logic [15:0] mem [0:8191];
 
 always_comb begin
     __instr = instr_list_0[i_pc_rddata[15:0]];
-    Fetch = instr_list_0[mem[o_pc_addr[15:1]]];
-    Decode = __instr;
-    Execute_Memory = instr_list_0[tb.dut.ID_EX[15:0]];
-    Writeback = instr_list_0[tb.dut.EX_WB[15:0]];
+    Fetch = (tb.dut.f0.f_valid) ? instr_list_0[mem[o_pc_addr[15:1]]] : "";
+    Decode = (tb.dut.r0.valid) ? __instr : "";
+    Execute_Memory = (tb.dut.ex0.valid) ? instr_list_0[tb.dut.ID_EX[15:0]] : "";
+    Writeback = (tb.dut.wb0.valid) ? instr_list_0[tb.dut.EX_WB[15:0]] : "";
 end
 
 // Define memory functionality.
