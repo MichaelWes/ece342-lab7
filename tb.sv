@@ -18,6 +18,123 @@ always #5 clk = ~clk;
 // Create the reset signal 
 logic reset;
 
+// HASH TABLES WITH ENCODED INSTRUCTIONS
+string instr_list_0 [integer] = '{
+// Prog 0
+16'h0710: "mvi r0, 7",
+16'h0630: "mvi r1, 6",
+16'h0550: "mvi r2, 5",
+16'h0470: "mvi r3, 4",
+16'h0390: "mvi r4, 3",
+16'h02b0: "mvi r5, 2",
+16'h01d0: "mvi r6, 1",
+16'h00f0: "mvi r7, 0",
+16'h0112: "subi r0, 1",
+16'h0132: "subi r1, 1",
+16'h0152: "subi r2, 1",
+16'h0172: "subi r3, 1",
+16'h0192: "subi r4, 1",
+16'h01b2: "subi r5, 1",
+16'h01d2: "subi r6, 1",
+16'h01f2: "subi r7, 1",
+16'h0011: "addi r0, 0",
+// Prog 1
+16'h0130: "mvi r1, 1",
+16'h0250: "mvi r2, 2",
+16'h0370: "mvi r3, 3",
+16'h0590: "mvi r4, 5",
+16'h0141: "add r2, r1",
+16'h0261: "add r3, r2",
+16'h0281: "add r4, r2",
+16'h0121: "add r1, r1",
+16'h04e0: "mv r7, r4",
+16'h01e1: "add r7, r1",
+16'h03e1: "add r7, r3",
+16'h0090: "mvi r4, 0",
+16'h0330: "mvi r1, 3",
+16'h0250: "mvi r2, 2",
+16'h0170: "mvi r3, 1",
+16'h0380: "mv r4, r3",
+16'h0160: "mv r3, r1",
+16'h0420: "mv r1, r4",
+16'h0232: "subi r1, 2",
+16'h01c0: "mv r6, r1",
+16'hfe10: "mvi r0, 0xFE",
+16'hff16: "mvhi r0, 0xFF",
+16'h0111: "addi r0, 1",
+16'h00a0: "mv r5, r0",
+16'h0011: "addi r0, 0",
+// Prog 2
+16'h00d0: "mvi r6, 0",
+16'h00f0: "mvi r7, 0",
+16'h0010: "mvi r0, 0",
+16'h0011: "addi r0, 0",
+16'h01d1: "addi r6, 1",
+16'h0111: "addi r0, 1",
+16'h01d9: "jz error",
+16'h0010: "mvi r0, 0",
+16'h0112: "subi r0, 1",
+16'h015a: "jn error",
+16'h2a30: "mvi r1, error",
+16'h0010: "mvi r0, 0",
+16'h0011: "addi r0, 0",
+16'h0111: "addi r0, 1",
+16'h0029: "jzr r1",
+16'h0010: "mvi r0, 0",
+16'h0112: "subi r0, 1",
+16'h0111: "addi r0, 1",
+16'h002a: "jnr r1",
+16'hfff8: "j measure_end",
+16'h01f0: "mvi r7, 1",
+16'hffb8: "j measure_end",
+16'h0000: "mv r0, r0", // 001a: .dw 0
+// Prog 3
+16'h00b0: "mvi r5, 0",
+16'h00d0: "mvi r6, 0",
+16'h00bc: "call testfunc",
+16'h01b1: "addi r5, 1",
+16'h01d1: "addi r6, 1",
+16'h00d8: "j .0f",
+16'h01b1: "addi r5, 1",
+16'h01d1: "addi r6, 1",
+16'h04f1: "addi r7, 4",
+16'h00e8: "jr r7",
+16'h10f0: "mvi r7, testfunc",
+16'h00ec: "callr r7",
+16'h0058: "j .0f",
+16'h01b1: "addi r5, 1",
+16'h0110: "mvi r0, 1",
+16'h0011: "addi r0, 0",
+16'h0112: "subi r0, 1",
+16'h34f0: "mvi r7, .0f",
+16'h00e9: "jzr r7",
+16'h0010: "mvi r0, 0",
+16'h42f0: "mvi r7, .0f",
+16'h00ea: "jnr r7",
+16'h0110: "mvi r0, 1",
+16'h0059: "jz .0f",
+16'h0010: "mvi r0, 0",
+16'h005a: "jn measure_end",
+16'hfff8: "j measure_end",
+// Prog4
+16'h0010: "mvi r0, 0",
+16'h1610: "mvi r0, memvar1",
+16'h0004: "ld r0, r0",
+16'h0024: "ld r1, r0",
+16'h0531: "addi r1, 5",
+16'h0211: "addi r0, 2",
+16'h0025: "st r1, r0",
+16'h1810: "mvi r0, memvar2",
+16'h0211: "addi r0, 2",
+16'h00e4: "ld r7, r0",
+16'hfff8: "j measure_end",
+16'h0018: ".dw memvar2",
+16'h0005: ".dw 5",
+default: ""
+};
+
+string __instr;
+string Fetch, Decode, Execute_Memory, Writeback;
 
 // Declare the bus signals, using the CPU's names for them
 logic [15:0] o_pc_addr;
@@ -37,6 +154,14 @@ cpu dut(.*);
 
 // Create a 16KB memory, dual-ported
 logic [15:0] mem [0:8191];
+
+always_comb begin
+    __instr = instr_list_0[i_pc_rddata[15:0]];
+    Fetch = instr_list_0[mem[o_pc_addr[15:1]]];
+    Decode = __instr;
+    Execute_Memory = instr_list_0[tb.dut.ID_EX[15:0]];
+    Writeback = instr_list_0[tb.dut.EX_WB[15:0]];
+end
 
 // Define memory functionality.
 always_ff @ (posedge clk) begin
@@ -303,10 +428,10 @@ endtask
 
 initial begin
 	// Comment these out to run only certain tests.
-	do_test(0);
-	do_test(1);
-	do_test(2);
-	//do_test(3);
+	//do_test(0);
+	//do_test(1);
+	//do_test(2);
+	do_test(3);
 	//do_test(4);
 	//do_test(5);
 	

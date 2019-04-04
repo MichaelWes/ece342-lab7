@@ -1,26 +1,47 @@
 quit -sim
+vlog definesPkg.sv
 vlog *.sv
 vsim -novopt tb
-add wave -group "tb" -radix hex /tb/*
 add wave -group "cpu" -radix hex /tb/dut/*
-add wave -group "RF" -radix hex /tb/dut/rf0/regs
-add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm8
-add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/s_ext_imm11
-add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/Rx_valid
-add wave -group "internal_decode_signals" -radix hex /tb/dut/r0/Ry_valid
-add wave -group "valid bits" /tb/dut/f0/f_valid
-add wave -group "valid bits" /tb/dut/r0/valid
-add wave -group "valid bits" /tb/dut/ex0/valid
-add wave -group "internal signals" /tb/dut/ex0/taken
+
+add wave -group "RF" -radix hex -label "Register File" /tb/dut/rf0/regs
+
+add wave -group "internal_decode_signals" -radix hex -label "s_ext(imm8)" /tb/dut/r0/s_ext_imm8
+add wave -group "internal_decode_signals" -radix hex -label "s_ext(imm11)" /tb/dut/r0/s_ext_imm11
+add wave -group "internal_decode_signals" -radix hex -label "Rx_valid" /tb/dut/r0/Rx_valid
+add wave -group "internal_decode_signals" -radix hex -label "Ry_valid" /tb/dut/r0/Ry_valid
+
+add wave -group "valid bits" -label "Fetch Valid?" /tb/dut/f0/f_valid
+add wave -group "valid bits" -label "Decode Valid?" /tb/dut/r0/valid
+add wave -group "valid bits" -label "Execute Valid?" /tb/dut/ex0/valid
+add wave -group "valid bits" -label "Writeback Valid?" /tb/dut/wb0/valid
+
+add wave -group "internal signals" -label "Taken" /tb/dut/ex0/taken
 add wave -group "internal signals" /tb/dut/ex0/opcode
-add wave -group "internal signals" -radix hex /tb/dut/ex0/BT
-add wave -group "valid bits" /tb/dut/wb0/valid
+add wave -group "internal signals" -label "Branch Target" -radix hex /tb/dut/ex0/BT
+
+add wave -group "Instruction" -label "clk" /tb/clk
+add wave -group "Instruction" -label "reset" /tb/reset
+add wave -group "Instruction" -label "PC" /tb/dut/PC
+add wave -group "Instruction" -label "MEM\[PC\]" /tb/dut/i_pc_rddata
+
+add wave -group "Pipeline Diagram" -label "Fetch" /tb/Fetch
+add wave -group "Pipeline Diagram" -label "Decode" /tb/Decode
+add wave -group "Pipeline Diagram" -label "Execute/Memory" /tb/Execute_Memory
+add wave -group "Pipeline Diagram" -label "Writeback" /tb/Writeback
+
+add wave -group "Pipeline Registers" -label "IF/ID" -radix hex /tb/dut/f0/IF_ID
+add wave -group "Pipeline Registers" -label "ID/EX" -radix hex /tb/dut/r0/ID_EX
+add wave -group "Pipeline Registers" -label "EX/WB" -radix hex /tb/dut/ex0/EX_WB
+
 delete wave /tb/clk
 delete wave /tb/reset
 delete wave /tb/dut/o_tb_regs
 delete wave /tb/o_tb_regs
 delete wave /tb/tstate
+
 run -all
+
 layout load Simulate
 layout zoomwindow wave
 noview objects
