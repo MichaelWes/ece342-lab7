@@ -61,8 +61,6 @@ module datapath_RF_Read
 		endcase
    end
 	
-	
-   
 	// Operand forwarding logic
 	always_comb begin
 		operand1 = data1;

@@ -24,8 +24,9 @@ module datapath_fetch
    // whatever is needed as input to the next stage.
    output logic [IF_ID_WIDTH-1:0] IF_ID;
    
-   logic f_valid;
+   wire f_valid = '1;
 
+	/*
    always_ff @(posedge clk or posedge reset) begin
       if(reset) 
          f_valid <= '0;
@@ -33,7 +34,8 @@ module datapath_fetch
          f_valid <= '1;
       end
    end
-   
+   */
+	
 	wire [15:0] PC_input = (taken == 1'b1) ? (BT) : (PC + 16'd2); 
 	
    always_ff @(posedge clk or posedge reset) begin
