@@ -27,6 +27,8 @@ module datapath_writeback
 	
 	logic[15:0] PC;
 	
+	wire taken;
+	
 	assign {taken, PC, valid, data1, data2, ALUout, instr} = EX_WB;
 	wire [4:0] opcode = instr[4:0];
 	

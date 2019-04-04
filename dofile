@@ -2,7 +2,8 @@ quit -sim
 vlog definesPkg.sv
 vlog *.sv
 vsim -novopt tb
-add wave -group "cpu" -radix hex /tb/dut/*
+add wave -group "Flag Bits" -label "Zero Flag" /tb/dut/a0/Z
+add wave -group "Flag Bits" -label "Negative Flag" /tb/dut/a0/N
 
 add wave -group "RF" -radix hex -label "Register File" /tb/dut/rf0/regs
 
@@ -22,8 +23,8 @@ add wave -group "internal signals" -label "Branch Target" -radix hex /tb/dut/ex0
 
 add wave -group "Instruction" -label "clk" /tb/clk
 add wave -group "Instruction" -label "reset" /tb/reset
-add wave -group "Instruction" -label "PC" /tb/dut/PC
-add wave -group "Instruction" -label "MEM\[PC\]" /tb/dut/i_pc_rddata
+add wave -group "Instruction" -label "PC" -radix hex /tb/dut/PC
+add wave -group "Instruction" -label "MEM\[PC\]" -radix hex /tb/dut/i_pc_rddata
 
 add wave -group "Pipeline Diagram" -label "Fetch" /tb/Fetch
 add wave -group "Pipeline Diagram" -label "Decode" /tb/Decode
@@ -33,6 +34,21 @@ add wave -group "Pipeline Diagram" -label "Writeback" /tb/Writeback
 add wave -group "Pipeline Registers" -label "IF/ID" -radix hex /tb/dut/f0/IF_ID
 add wave -group "Pipeline Registers" -label "ID/EX" -radix hex /tb/dut/r0/ID_EX
 add wave -group "Pipeline Registers" -label "EX/WB" -radix hex /tb/dut/ex0/EX_WB
+
+add wave -group "IF/ID" -label "IF/ID -- f_valid" -radix hex /tb/dut/f0/IF_ID\[32\]
+add wave -group "IF/ID" -label "IF/ID -- PC_input" -radix hex /tb/dut/f0/IF_ID\[31:16\]
+
+add wave -group "ID/EX" -label "ID/EX -- Rx_valid" -radix hex /tb/dut/r0/ID_EX\[104\]
+add wave -group "ID/EX" -label "ID/EX -- Ry_valid" -radix hex /tb/dut/r0/ID_EX\[103\]
+add wave -group "ID/EX" -label "ID/EX -- Rx" -radix hex /tb/dut/r0/ID_EX\[102:100\]
+add wave -group "ID/EX" -label "ID/EX -- Ry" -radix hex /tb/dut/r0/ID_EX\[99:97\]
+add wave -group "ID/EX" -label "ID/EX -- Decode valid" -radix hex /tb/dut/r0/ID_EX\[96\]
+add wave -group "ID/EX" -label "ID/EX -- s_ext_imm8" -radix hex /tb/dut/r0/ID_EX\[95:80\]
+add wave -group "ID/EX" -label "ID/EX -- s_ext_imm11" -radix hex /tb/dut/r0/ID_EX\[79:64\]
+add wave -group "ID/EX" -label "ID/EX -- operand1" -radix hex /tb/dut/r0/ID_EX\[63:48\]
+add wave -group "ID/EX" -label "ID/EX -- operand2" -radix hex /tb/dut/r0/ID_EX\[47:32\]
+add wave -group "ID/EX" -label "ID/EX -- PC" -radix hex /tb/dut/r0/ID_EX\[31:16\]
+add wave -group "ID/EX" -label "ID/EX -- instr" -radix hex /tb/dut/r0/ID_EX\[15:0\]
 
 delete wave /tb/clk
 delete wave /tb/reset

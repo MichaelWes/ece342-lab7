@@ -38,7 +38,6 @@ module cpu
    wire [2:0] regw; 
 	wire [7:0][15:0] regs;
    wire RFWrite;
-	wire lock = taken;
    RF rf0(.*);
    assign o_tb_regs = regs;
 	
