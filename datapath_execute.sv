@@ -20,11 +20,18 @@ module datapath_execute
 	dataw,
 	regw,
 	BT,
-	taken
+	taken,
+	d_valid,
+	ex_valid
 );
    input clk;
    input reset;   
-   
+   input d_valid;
+	
+	// branch instruction logic
+	output logic [15:0] BT;
+	output logic taken;
+	
    input [ID_EX_WIDTH-1:0] ID_EX;
    output logic [EX_WB_WIDTH-1:0] EX_WB;
 		
@@ -35,13 +42,23 @@ module datapath_execute
    wire [15:0] data2; //[Ry]
    wire [15:0] s_ext_imm8;
    wire [15:0] s_ext_imm11;
-   wire valid;
+	
+	output logic ex_valid;
+	
 	wire [2:0] Rx;
 	wire [2:0] Ry;
 	wire Rx_valid, Ry_valid;
 	
-   assign {Rx_valid, Ry_valid, Rx, Ry, valid, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
-   	
+   assign {Rx_valid, Ry_valid, Rx, Ry, s_ext_imm8, s_ext_imm11, data1, data2, PC, instr} = ID_EX;
+	
+	always_ff @(posedge clk or posedge reset) begin
+		if(reset) begin
+			ex_valid <= '0;
+		end else begin
+			ex_valid = (taken) ? '0 : d_valid;
+		end
+	end
+	
    // ALU
    output logic [2:0] ALUop;	
    output logic [15:0] ALUop1;
@@ -66,9 +83,7 @@ module datapath_execute
 	logic [15:0] operand1;
 	logic [15:0] operand2;
 	
-	// branch instruction logic
-	output logic [15:0] BT;
-	output logic taken;
+
 	
 	// Operand forwarding logic
 	always_comb begin
@@ -84,7 +99,7 @@ module datapath_execute
 	
 	always_comb begin
 		taken = '0;
-		if(valid) begin
+		if(ex_valid) begin
 			casex(opcode)
 				// jr, callr, j, call instructions imply the branch should be taken
 				5'bx1x00: begin 
@@ -188,7 +203,7 @@ module datapath_execute
 	
 	// Generate signals for loads and stores
 	always_comb begin
-		if(valid) begin
+		if(ex_valid) begin
 			case(opcode)
 				// ld
 				5'b00100: begin
@@ -223,9 +238,7 @@ module datapath_execute
 		if(reset) begin
 			EX_WB <= '0;
 		end else begin
-			if(valid) begin
-				EX_WB <= {PC, valid, data1, data2, ALUout, instr};
-			end
+			EX_WB <= {PC, data1, data2, ALUout, instr};
 		end
 	end
 	

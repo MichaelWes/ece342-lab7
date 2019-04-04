@@ -8,10 +8,13 @@ module datapath_writeback
 	i_ldst_rddata,
 	RFWrite,
 	dataw,
-	regw
+	regw,
+	ex_valid,
+	wb_valid
 );
    input clk;
-   input reset;   
+   input reset;
+	input ex_valid;
    
    input [EX_WB_WIDTH-1:0] EX_WB;
    input [15:0] i_ldst_rddata;
@@ -19,7 +22,7 @@ module datapath_writeback
 	wire [15:0] ALUout;
    wire [15:0] data1; //[Rx]
    wire [15:0] data2; //[Ry]	
-	wire valid;
+	output logic wb_valid;
 
 	output logic RFWrite;
 	output logic [15:0] dataw;
@@ -27,16 +30,20 @@ module datapath_writeback
 	
 	logic[15:0] PC;
 	
-	wire taken;
-	
-	assign {taken, PC, valid, data1, data2, ALUout, instr} = EX_WB;
+	assign {PC, data1, data2, ALUout, instr} = EX_WB;
 	wire [4:0] opcode = instr[4:0];
-	
-	logic wb_valid;
 
+	always_ff @(posedge clk or posedge reset) begin
+		if(reset) begin
+			wb_valid <= '0;
+		end else begin
+			wb_valid <= ex_valid;
+		end
+	end
+	
 	always_comb begin
 		RFWrite = 1'b0;
-		if(valid) begin
+		if(wb_valid) begin
 			casex(opcode)
 				// mv, add, sub, mvi, addi, sub, mvhi
 				5'b0000x, 5'b00010, 5'b1000x, 5'b10010, 5'b10110: begin

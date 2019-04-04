@@ -158,9 +158,9 @@ logic [15:0] mem [0:8191];
 always_comb begin
     __instr = instr_list_0[i_pc_rddata[15:0]];
     Fetch = (tb.dut.f0.f_valid) ? instr_list_0[mem[o_pc_addr[15:1]]] : "";
-    Decode = (tb.dut.r0.valid) ? __instr : "";
-    Execute_Memory = (tb.dut.ex0.valid) ? instr_list_0[tb.dut.ID_EX[15:0]] : "";
-    Writeback = (tb.dut.wb0.valid) ? instr_list_0[tb.dut.EX_WB[15:0]] : "";
+    Decode = (tb.dut.r0.d_valid) ? __instr : "";
+    Execute_Memory = (tb.dut.ex0.ex_valid) ? instr_list_0[tb.dut.ID_EX[15:0]] : "";
+    Writeback = (tb.dut.wb0.wb_valid) ? instr_list_0[tb.dut.EX_WB[15:0]] : "";
 end
 
 // Define memory functionality.
@@ -428,10 +428,10 @@ endtask
 
 initial begin
 	// Comment these out to run only certain tests.
-	//do_test(0);
-	//do_test(1);
+	do_test(0);
+	do_test(1);
 	do_test(2);
-	//do_test(3);
+	do_test(3);
 	//do_test(4);
 	//do_test(5);
 	

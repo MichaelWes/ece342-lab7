@@ -12,10 +12,16 @@ module datapath_RF_Read
    IF_ID,
    ID_EX,
 	dataw,
-	regw
+	regw,
+	taken,
+	f_valid,
+	d_valid
 );
 	input clk;
 	input reset;
+	input taken;
+	input f_valid;
+	output d_valid;
 	
 	input [15:0] i_pc_rddata;
 	
@@ -37,7 +43,15 @@ module datapath_RF_Read
 	logic [15:0] s_ext_imm8;
 	logic [15:0] s_ext_imm11;
 
-	wire valid = IF_ID[32];
+	logic d_valid;
+	always_ff @(posedge clk or posedge reset) begin
+		if(reset) begin
+			d_valid <= '0;
+		end else begin
+			d_valid = (taken) ? '0 : f_valid;
+		end
+	end
+	
 	wire [4:0] opcode = instr[4:0];
 	
 	// forwarded signals from WB stage
@@ -88,7 +102,7 @@ module datapath_RF_Read
          ID_EX <= '0;   
       end else begin
          // TODO: Other information to pass along?
-         ID_EX <= {Rx_valid, Ry_valid, Rx, Ry, valid, s_ext_imm8, s_ext_imm11, operand1, operand2, PC, instr};  
+         ID_EX <= {Rx_valid, Ry_valid, Rx, Ry, s_ext_imm8, s_ext_imm11, operand1, operand2, PC, instr};  
       end
    end
 endmodule

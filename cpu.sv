@@ -30,6 +30,7 @@ module cpu
    assign o_pc_addr = PC;
    
    // Register File interface
+	wire f_valid;
    wire [15:0] data1;
    wire [15:0] data2;
    wire [15:0] dataw;
@@ -42,6 +43,7 @@ module cpu
    assign o_tb_regs = regs;
 	
    // Instruction Decode interface
+	wire d_valid;
    wire [ID_EX_WIDTH-1:0] ID_EX;
    wire [2:0] Rx;
    wire [2:0] Ry;
@@ -50,8 +52,8 @@ module cpu
    datapath_RF_Read r0(.*);
    
    // Execute interface
+	wire ex_valid;
    wire [EX_WB_WIDTH-1:0] EX_WB;
-   // TODO: implement
    datapath_execute ex0(.*);
    
    // Main ALU interface
@@ -65,7 +67,7 @@ module cpu
    ALU a0(.*);
       
    // Writeback interface
-   // TODO: implement
+   wire wb_valid;
    datapath_writeback wb0(.*);
    
 endmodule
