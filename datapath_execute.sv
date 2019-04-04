@@ -83,8 +83,6 @@ module datapath_execute
 	logic [15:0] operand1;
 	logic [15:0] operand2;
 	
-
-	
 	// Operand forwarding logic
 	always_comb begin
 		operand1 = data1;

@@ -59,14 +59,11 @@ module datapath_writeback
 					regw = 3'd7;
 				end
 				// ld
-				/*
 				5'b00100: begin
 					RFWrite = 1'b1;
 					dataw = i_ldst_rddata; // mem[[Ry]]
 					regw = instr[7:5]; // [Rx] <- mem[[Ry]]
 				end
-				*/
-				// TODO: st
 
 				// cmp, cmpi: do not write back to RF
 				default: begin
